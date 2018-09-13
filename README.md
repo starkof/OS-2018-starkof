@@ -1,2 +1,2 @@
-# operating_systems
+# Operating Systems
 Repository for Operating Systems course at Ashesi
