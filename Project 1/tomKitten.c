@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[]){
 	if (argc == 1){
-		printf("Please provide the name of a file as a parameter %d\n", argc);
+		printf("Please provide the name of a file as a parameter \n");
 		return 0;
 	} else if (argc == 2){
 		FILE *fp;
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
 		}
 
 		while (fgets(buffer, BUFFER_SIZE, fp) != NULL){
-			printf("%s",sizeof(buffer)/sizeof(buffer[0]), buffer);
+			printf("%s", buffer);
 		}
 		fclose(fp);
 	}
