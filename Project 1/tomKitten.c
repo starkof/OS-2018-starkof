@@ -4,8 +4,6 @@
 
 #include <stdio.h>
 
-#define BUFFER_SIZE 255
-
 
 int main(int argc, char *argv[]){
 	if (argc == 1){
@@ -13,7 +11,6 @@ int main(int argc, char *argv[]){
 		return 0;
 	} else if (argc == 2){
 		FILE *fp;
-		char buffer[BUFFER_SIZE];
 
 		// open the file
 		fp = fopen(argv[1], "r");
@@ -24,12 +21,12 @@ int main(int argc, char *argv[]){
 			return -1;
 		}
 
-		// read the file one line at a time
-		while (fgets(buffer, BUFFER_SIZE, fp) != NULL){
-			// print each line in the file
-			printf("%s", buffer);
-		}
-		// close the file
+		char c;
+		do {
+			c = fgetc(fp);
+			printf("%c", c);
+		} while (c != EOF);
+
 		fclose(fp);
 	} else {
 		printf("Too many arguments have been provided for this program\n");
