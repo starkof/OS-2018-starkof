@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#define BUFFER_SIZE 255
+#define BUFFER_SIZE 1028
 
 int chlength(char *arr){
 	// abstraction for finding the length of a character array
