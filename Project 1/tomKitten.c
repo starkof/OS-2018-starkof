@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]){
 	if (argc == 1){
-		printf("Please provide the name of a file as a parameter \n");
+		printf("Please at least 1 filename as a parameter as a parameter \n");
 		return 0;
 	} else if (argc >= 2) {
         FILE *fp;
