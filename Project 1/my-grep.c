@@ -18,15 +18,58 @@ int chlength(char *arr){
 	return n;
 }
 
+void find_substr(FILE *fp, char *searchString){
+    char c;
+    char buffer[BUFFER_SIZE];
+    int argSize = chlength(searchString);
+    int n = 0;
+
+
+    // read one line of the file at a time
+    while (fgets(buffer, BUFFER_SIZE, fp) != NULL) {
+        int i = 0;
+        // loop through the characters in each line
+        while (buffer[i] != '\0') {
+            c = buffer[i];
+            // if a character in the file matches a character in the searcht string
+            if (c == searchString[n]) {
+                // move to the next character in the search string and keep checking
+                n++;
+                argSize--;
+            } else {
+                // go back to the beginning of the search string if a mismatch is found
+                n = 0;
+                argSize = chlength(searchString);
+            }
+            if (argSize == 0) {
+                // print the line if all the characters in the search string match a substring in the line
+                printf("%s", buffer);
+
+                // go back to the beginning of the search string and keep searching for more matches
+                n = 0;
+                argSize = chlength(searchString);
+            }
+            i++;
+        }
+    }
+    // close the file
+    fclose(fp);
+}
+
 int main(int argc, char *argv[]){
-	// check if the right number of parameters have been provided
-	if (argc < 3){
-		printf("Please provide a search string and at least 1 filename as parameters\n");
-		return 1;
-	}
+    if (argc == 2){
+        char s[127];
+        printf("Enter a filename: ");
+        scanf("%s", s);
+
+        FILE *fp;
+        fp = fopen(s, "r");
+        char *searchString = argv[1];
+        find_substr(fp, searchString);
+    }
 	else if (argc >= 3) {
         FILE *fp;
-        char buffer[BUFFER_SIZE];
+
 
         for (int i = 2; i <= argc-1; i++){
             char *filename = argv[i];
@@ -40,41 +83,8 @@ int main(int argc, char *argv[]){
                 return -1;
             }
 
-            char c;
             char *searchString = argv[1];
-            int argSize = chlength(searchString);
-            int n = 0;
-
-
-            // read one line of the file at a time
-            while (fgets(buffer, BUFFER_SIZE, fp) != NULL) {
-                int i = 0;
-                // loop through the characters in each line
-                while (buffer[i] != '\0') {
-                    c = buffer[i];
-                    // if a character in the file matches a character in the searcht string
-                    if (c == searchString[n]) {
-                        // move to the next character in the search string and keep checking
-                        n++;
-                        argSize--;
-                    } else {
-                        // go back to the beginning of the search string if a mismatch is found
-                        n = 0;
-                        argSize = chlength(searchString);
-                    }
-                    if (argSize == 0) {
-                        // print the line if all the characters in the search string match a substring in the line
-                        printf("%s", buffer);
-
-                        // go back to the beginning of the search string and keep searching for more matches
-                        n = 0;
-                        argSize = chlength(searchString);
-                    }
-                    i++;
-                }
-            }
-            // close the file
-            fclose(fp);
+            find_substr(fp, searchString);
         }
 	}
 	return 0;
