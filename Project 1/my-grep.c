@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
 	// check if the right number of parameters have been provided
 	if (argc < 3){
 		printf("Please provide a search string and at least 1 filename as parameters\n");
-		return 0;
+		return 1;
 	}
 	else if (argc >= 3) {
         FILE *fp;
@@ -76,8 +76,6 @@ int main(int argc, char *argv[]){
             // close the file
             fclose(fp);
         }
-	} else {
-		printf("Too many arguments have been provided to this program\n");
 	}
 	return 0;
 }
