@@ -1,4 +1,4 @@
-// Fragile implementation of a Unix shell
+// Implementation of a Unix shell. Based on the Winsconsin Shell
 // Created by Stephan Ofosuhene on 9/27/18.
 
 #include <stdio.h>
@@ -74,6 +74,7 @@ int run_builtins(char **args, int arglen, char **path){
 
 
 void run_system_commands(int argc, char **argv, char **path){
+    printf("running system commands\n");
     char *current_path;
     char *command = argv[0];
     int n = 0;
@@ -82,13 +83,13 @@ void run_system_commands(int argc, char **argv, char **path){
     while (current_path != NULL){
         current_path = path[n];
 
-        for (int i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++){
             int rc = fork();
             if (rc < 0) {
                 printf("failed to create child process\n");
             } else if (rc == 0) {
                 char src[100];
-                char dest[100];
+                char dest[200];
                 strcpy(dest, current_path);
                 strcpy(src, command);
                 if (execv(strcat(dest, src), argv) == -1) {
@@ -116,7 +117,7 @@ int main(int argc, char *argv[]){
     path[0] = "/bin/";
     if (argc ==  1) {
         while (true) {
-            printf("eggshell> ");
+            printf("wish> ");
             fgets(inputBuffer, BUFFER_SIZE, stdin);
 
             arguments = inputBuffer;
@@ -125,7 +126,8 @@ int main(int argc, char *argv[]){
             get_arguments(arguments, &arglen, allArgs);
 
             isbuiltin = run_builtins(allArgs, arglen, path);
-            if (isbuiltin == 1) {
+            if (isbuiltin != 1) {
+                printf("is not builtin\n");
                 run_system_commands(arglen, allArgs, path);
             }
         }
