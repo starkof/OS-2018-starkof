@@ -65,11 +65,30 @@ int run_builtins(char **args, int arglen, char **path){
         return 0;
     }
 
-    else if (strcmp(args[0], "path") == 0){
-        for (int i = 1; i < arglen; i++){
-            printf("adding to path: %s\n", args[i]);
-            path[i-1] = args[i];
+    else if (strcmp(args[0], "path") == 0 && arglen > 1){
+        char *current = path[0];
+        int n = 0;
+        while (current != NULL){
+            current = path[n];
+            printf("path[%d]: %s\n", n, path[n]);
+            n++;
         }
+        n--;
+        for (int i = n; i < arglen + n; i++){
+            printf("adding to path[%d]: %s\n", i, args[i]);
+            path[i] = args[i];
+        }
+
+        current = path[0];
+        int k = 0;
+        while (current != NULL){
+            printf("printing path %d: %s\n", k, current);
+            current = path[k];
+            k++;
+        }
+        return 0;
+    } else if (strcmp(args[0], "path") == 0 && arglen < 2){
+        printf("path requires at least one parameter\n");
         return 0;
     }
 
@@ -79,13 +98,30 @@ int run_builtins(char **args, int arglen, char **path){
 
 void run_system_commands(int argc, char **argv, char **path){
     printf("running system commands\n");
+//    path[1] = "/Users/";
     char *current_path;
     char *command = argv[0];
     int n = 0;
 
     current_path = path[n];
+
     while (current_path != NULL){
+        printf("current path %d: %s\n", n, current_path);
         current_path = path[n];
+
+        if (argc == 1){
+            char src[100];
+            char dest[200];
+            strcpy(dest, current_path);
+            strcpy(src, command);
+            strcat(dest, src);
+
+            if (execv(dest, argv) == -1) {
+                printf("failed to run command\n");
+            }
+
+//            exit(0);
+        }
 
         for (int i = 1; i < argc; i++){
             int rc = fork();
@@ -96,7 +132,9 @@ void run_system_commands(int argc, char **argv, char **path){
                 char dest[200];
                 strcpy(dest, current_path);
                 strcpy(src, command);
-                if (execv(strcat(dest, src), argv) == -1) {
+                strcat(dest, src);
+                printf("running: %s\n", dest);
+                if (execv(dest, argv) == -1) {
                     printf("failed to run command\n");
                 }
                 exit(0);
@@ -119,6 +157,7 @@ int main(int argc, char *argv[]){
     char *path[100];
     int isbuiltin;
     path[0] = "/bin/";
+
     if (argc ==  1) {
         while (true) {
             printf("wish> ");
