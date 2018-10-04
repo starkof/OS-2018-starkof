@@ -42,6 +42,7 @@ void get_arguments(char *argstring, int *arglen, char **buffer){
 
 
 int run_builtins(char **args, int arglen, char **path){
+    printf("running builtins\n");
     if (strcmp(args[0], "exit") == 0 && arglen == 1){
         exit(0);
     } else if (strcmp(args[0], "exit") == 0 && arglen > 1){
@@ -58,15 +59,18 @@ int run_builtins(char **args, int arglen, char **path){
         if (chdir(args[1]) == -1){
             printf("failed to change directory\n");
             return -1;
+        } else {
+            printf("current directory: %s\n", args[1]);
         }
         return 0;
     }
 
     else if (strcmp(args[0], "path") == 0){
-        for (int i = 1; i < arglen; i ++){
-            printf("adding to path: %s, i: %d\n", args[i], i);
+        for (int i = 1; i < arglen; i++){
+            printf("adding to path: %s\n", args[i]);
             path[i-1] = args[i];
         }
+        return 0;
     }
 
     return 1;
@@ -126,8 +130,8 @@ int main(int argc, char *argv[]){
             get_arguments(arguments, &arglen, allArgs);
 
             isbuiltin = run_builtins(allArgs, arglen, path);
-            if (isbuiltin != 1) {
-                printf("is not builtin\n");
+//            run_system_commands(arglen, allArgs, path);
+            if (isbuiltin != 0) {
                 run_system_commands(arglen, allArgs, path);
             }
         }
@@ -147,7 +151,8 @@ int main(int argc, char *argv[]){
             arguments = buffer;
             get_arguments(arguments, &arglen, allArgs);
             isbuiltin = run_builtins(allArgs, arglen, path);
-            if (isbuiltin == 1) {
+
+            if (isbuiltin != 0) {
                 run_system_commands(arglen, allArgs, path);
             }
         }

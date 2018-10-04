@@ -1,2 +1,2 @@
 all:
-	gcc -O -Wall eggshell.c -o eggshell.o
+	gcc -O -Wall wish.c -o wish.o
