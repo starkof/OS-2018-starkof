@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#define BUCKETS (101)
 
 // counter ============================================================
 typedef struct __counter_t {
@@ -91,7 +92,12 @@ int List_Lookup(list_t *L, int key){
 }
 
 int List_Length(list_t *L){
-    return L->length;
+    pthread_mutex_lock(&L->lock);
+    int len = L->length;
+    pthread_mutex_unlock(&L->lock);
+
+    return len;
+
 }
 
 // queue ============================================================
@@ -101,6 +107,7 @@ typedef struct __qnode_t {
 } qnode_t;
 
 typedef struct __queue_t {
+    int length;
     qnode_t *head;
     qnode_t *tail;
     pthread_mutex_t headLock;
@@ -124,6 +131,8 @@ void Queue_Enqueue(queue_t *q, int value) {
     pthread_mutex_lock(&q->tailLock);
     q->tail->next = tmp;
     q->tail = tmp;
+
+    q->length++;
     pthread_mutex_unlock(&q->tailLock);
 }
 
@@ -142,8 +151,50 @@ int Queue_Dequeue(queue_t *q, int *value) {
     pthread_mutex_unlock(&q->headLock);
     free(tmp);
 
+    q->length--;
+
     return 0;
 }
 
-// hash table ============================================================
+int Queue_Length(queue_t *q) {
+    pthread_mutex_lock(&q->headLock);
+    pthread_mutex_lock(&q->tailLock);
+    int len = q->length;
+    pthread_mutex_unlock(&q->headLock);
+    pthread_mutex_unlock(&q->tailLock);
+    return len;
+}
 
+// hash table ============================================================
+typedef struct __hash_t {
+    int length;
+    list_t lists[BUCKETS];
+    pthread_mutex_t lengthlock;
+} hash_t;
+
+void Hash_Init(hash_t *H) {
+    int i;
+    for (i=0;i<BUCKETS;i++){
+        List_Init(&H->lists[i]);
+    }
+}
+
+int Hash_Insert(hash_t *H, int key) {
+    pthread_mutex_lock(&H->lengthlock);
+    int bucket = key % BUCKETS;
+    H->length++;
+    pthread_mutex_unlock(&H->lengthlock);
+    return List_Insert(&H->lists[bucket], key);
+}
+
+int Hash_Lookup(hash_t *H, int key) {
+    int bucket = key % BUCKETS;
+    return List_Lookup(&H->lists[bucket], key);
+}
+
+int Hash_Length(hash_t *H) {
+    pthread_mutex_lock(&H->lengthlock);
+    int len = H->length;
+    pthread_mutex_unlock(&H->lengthlock);
+    return len;
+}
