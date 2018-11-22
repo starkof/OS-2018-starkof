@@ -29,14 +29,14 @@ int main(int argc, char *argv[]){
         increment(&count);
     }
 
+    printf("Expected count = 10\n");
     printf("Counter value after incrementing 10 times: %d\n", get_count_val(&count));
 
     printf("Incrementing value by 10,000 each in 2 threads\n");
 
 //    pid_t pid = fork();
 
-    pthread_t p1;
-    pthread_t p2;
+    pthread_t p1, p2;
 
     pthread_create(&p1, NULL, thread_counter, "A");
     pthread_create(&p1, NULL, thread_counter, "B");
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
     pthread_join(p1, NULL);
     pthread_join(p2, NULL);
 
-
+    printf("Expected count = 20010\n");
     printf("Counter value after multithreaded increment: %d\n\n", get_count_val(&count));
 
     return 0;
